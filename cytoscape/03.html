@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+     <title>Graaf</title>
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.9.4/cytoscape.min.js"></script>
+	 <script>
+	    let xhr=new XMLHttpRequest();
+   xhr.onreadystatechange=loeAndmed;
+   let viisid, andmed, kasutusel=["g", "a", "h", "2c", "2d"];
+   
+   function loeAndmed(){
+     if(xhr.readyState==4){ 
+	  viisid=xhr.responseText.split("\n");	
+	  for(i=1; i<viisid.length; i++){
+	     lisaAlgusnoot(viisid[i].split(",")[10])
+	  }
+		  graaf.layout({name: 'circle'}).run()
+
+	 }
+   }
+
+   function lisaAlgusnoot(noot){
+      if(kasutusel.includes(noot)){
+	     if(graaf.getElementById(noot).length==0){
+		    graaf.add({group:'nodes', data:{id:noot}});
+		    graaf.add({group:'edges', data:{source:'algus', target:noot, width:1}});
+			console.log(noot);
+		 } else {
+		    let e=graaf.edges("[target='"+noot+"']");
+			e.data("width", e.data("width")+1);
+		 }
+	  }
+   }
+	    let graaf;
+	    function algus(){
+		  graaf=cytoscape({
+		     container: document.getElementById("kiht1"),
+			 elements: {
+			   nodes: [
+			     {data: {id: 'algus'}},
+			   ],
+			 },
+			 style: [
+			  {selector: 'node', style:{'label': 'data(id)'}},
+			  {selector: 'edge', style:{'label': 'data(width)'}},
+			]
+		  });
+		xhr.open("GET", "regiviisid.txt", true);
+	    xhr.send();
+		}
+	 </script>
+  </head>
+  <body onload="algus()">
+    <div id="kiht1" style="width: 400px; height: 300px; background-color: yellow"></div>
+  </body>
+</html>
